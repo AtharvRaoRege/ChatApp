@@ -36,14 +36,22 @@
 
   <body class="bg-blue-100 flex items-center justify-center h-screen">
     <div class="info hidden bg-red-500 rounded-lg w-3/5 h-4/5 p-5 absolute">
-      <button class="closebtn absolute right-0 px-4 text-white top-0 py-2 bg-blue-900 rounded-md">
+      <button
+        class="closebtn absolute right-0 px-4 text-white top-0 py-2 bg-blue-900 rounded-md"
+      >
         close
       </button>
-      <h3 class="text-4xl -mt-5 italic bold underline ml-4 text-black font-bold text-center">Participants</h3>
-      <div class="peoples rounded-lg bg-blue-400 py-4 overflow-y-auto px-2 h-full w-full">
-        <div class="bg-green-900 flex items-center justify-start mt-8 h-20 w-full">
+      <h3
+        class="text-4xl -mt-5 italic bold underline ml-4 text-black font-bold text-center"
+      >
+        Online Users
+      </h3>
+      <div
+        class="peoples rounded-lg bg-blue-400 py-4 overflow-y-auto px-2 h-full w-full"
+      >
+        <!-- <div class="bg-green-900 flex items-center justify-start mt-8 h-20 w-full">
           <h3 class="text-4xl ml-4 text-white">Atharv Rege</h3>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="namedivv h-screen w-full fixed bg-white">
@@ -75,7 +83,7 @@
           <h2 class="text-white text-xl">
             <span class="sptg text-black font-semibold"></span> is chatting.
             <a href="/" class="reset px-4 py-1 bg-red-900 text-white rounded-lg"
-              >reset</a
+              >logout</a
             >
           </h2>
         </div>
@@ -177,12 +185,23 @@
       let container = ``;
       socket.on("message", function (message) {
         let myMsg = socket.id === message.id;
+        let date = new Date();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        if (hours > 12) hours = hours - 12;
+        if (hours < 10) hours = "0" + hours;
+        if (minutes < 10) minutes = "0" + minutes;
+        let ampm = hours >= "12" ? "pm" : "am";
+        let full_time = hours + ":" + minutes + " " + ampm;
+
+        console.log(full_time);
         if (message != "") {
           container = `<div class="mb-4 text-right">
                     <div class="flex items-end ${
                       myMsg ? "justify-end" : "justify-start"
                     }">
-                        <div class="${
+                      <div class="flex flex-col"> 
+                        <div class="flex flex-col ${
                           myMsg ? "bg-blue-600" : "bg-green-300"
                         } text-white p-2 rounded-lg max-w-xs">
                           ${
@@ -190,26 +209,46 @@
                               ? `<p>${message.message}</p>`
                               : `<p><b>${message.name}</b>: ${message.message}</p>`
                           }
-                        </div>
+                          </div>
+                          <p class="text-gray-600 opacity-80">${full_time}</p>
+                      </div>
                     </div>
                 </div>`;
+
+
+          // container = `<div class="mb-4 text-right">
+          //           <div class="flex flex-col items-end ${
+          //             myMsg ? "justify-end" : "justify-start"
+          //           }">
+          //               <div class="${
+          //                 myMsg ? "bg-blue-600" : "bg-green-300"
+          //               } flex flex-col text-white p-2 rounded-lg max-w-xs">
+          //                 ${
+          //                   myMsg
+          //                     ? `<p>${message.message}</p>`
+          //                     : `<p><b>${message.name}</b>: ${message.message}</p>`
+          //                 }
+          //               </div>
+          //                 <p class="text-gray-600 opacity-80">${full_time}</p>
+          //           </div>
+          //       </div>`;
           messages.innerHTML += container;
           messages.scrollTop = messages.scrollHeight;
           input.value = "";
         }
       });
-      let peopleDiv = document.querySelector(".peoples")
-      socket.on("participants",function(users){
+      let peopleDiv = document.querySelector(".peoples");
+      socket.on("participants", function (users) {
         console.log(users.users);
         peopleDiv.innerHTML = "";
-        users.users.forEach(function(elem){
-          let newdiv = document.createElement('div')
-          newdiv.innerHTML =  `<div class="bg-green-900 flex items-center justify-start mt-8 h-20 w-full">
+        users.users.forEach(function (elem) {
+          let newdiv = document.createElement("div");
+          newdiv.innerHTML = `<div class="bg-green-900 flex items-center justify-start mt-8 h-20 w-full">
             <h3 class="text-4xl ml-4 text-white">${elem}</h3>
-          </div>`
+          </div>`;
           peopleDiv.appendChild(newdiv);
-        })
-      })
+        });
+      });
     </script>
   </body>
 </html>
